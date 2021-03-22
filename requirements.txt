@@ -70,6 +70,7 @@ pbr==5.5.1
 pexpect==4.2.1
 pickleshare==0.7.4
 Pillow==7.2.0
+pip==21.0.1
 pkg-resources==0.0.0
 pkginfo==1.5.0.1
 pluggy==0.13.1
@@ -112,11 +113,13 @@ scipy==1.5.4
 SecretStorage==3.1.2
 semver==2.9.1
 sentry-sdk==0.19.5
+setuptools==54.1.2
 shortuuid==1.0.1
 simplegeneric==0.8.1
 simplejson==3.13.2
 six==1.15.0
 sklearn==0.0
+SMBD==VERSION
 smmap==3.0.5
 snowballstemmer==2.1.0
 Sphinx==3.5.2
@@ -148,6 +151,7 @@ wcwidth==0.1.7
 webencodings==0.5.1
 websocket-client==0.57.0
 Werkzeug==1.0.1
+wheel==0.36.2
 wrapt==1.12.1
 yarl==1.6.3
 zipp==3.1.0
