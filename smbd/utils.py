@@ -52,6 +52,9 @@ def init_model(model, output_size):
 def from_grad_to_heatmap(grad):
     return torch.mean(grad, dim=2)
 
+def _normalize(grad):
+    max_grad = torch.max(grad, dim=2)
+
 
 def _saved_dataloaders(dataloader: str) -> Tuple[Callable, Callable]:
     """
@@ -64,7 +67,7 @@ def _saved_dataloaders(dataloader: str) -> Tuple[Callable, Callable]:
         data.DataLoader: Dataloader object
     """
     if dataloader == "standard":
-        batch_size = 128
+        batch_size = 32
 
         def trainloader(trainset): return data.DataLoader(trainset, batch_size=batch_size,
                                                           shuffle=True, num_workers=4, pin_memory=True)
@@ -113,8 +116,6 @@ def _saved_models(model: str, output_size: int) -> Optional[nn.Module]:
         return _alexnet(output_size)
     if model.lower() == 'alexnet-cifar':
         return _alexnet_cifar()
-#     if model.lower() == 'voc-multilabel':
-#         return _pascal_voc_multilabel(output_size)
     if model.lower() == 'alexnet-cifar':
         return _alexnet_cifar()
     elif model.lower() == 'alexnet':
@@ -244,7 +245,7 @@ def _voc_pascal(input_size: int,
                 bias_probability: Optional[float] = None):
     from smbd.datasets.biased import BiasedPascalVOC_Dataset
 
-    VOC_PATH = 6*'../'+'nas/data/nesti_pacini/datasets/'
+    VOC_PATH = 7*'../'+'nas/data/nesti_pacini/datasets/VOC'
 
     transform = transforms.Compose([
         transforms.Resize((input_size, input_size))
@@ -263,7 +264,7 @@ def _voc_pascal(input_size: int,
 
     transform_target = transforms.Lambda(transform_targets)
 
-    trainset = BiasedPascalVOC_Dataset(root=VOC_PATH, download=False, image_set='train',
+    trainset = BiasedPascalVOC_Dataset(root=VOC_PATH, download=False, image_set='trainval',
                                        transform=transform, target_transform=transform_target,
                                        biased_class=biased_class, bias_method=bias_method,
                                        bias_probability=bias_probability)
@@ -331,6 +332,7 @@ def _vgg(output_size):
     model = torch.hub.load('pytorch/vision:v0.6.0', 'vgg16', pretrained=True)
     model.classifier[6] = nn.Linear(4096, output_size)
     lr = [1e-5, 5e-3]
+    # lr = [1e-4, 1e-4]
     optimizer = torch.optim.SGD([
         {'params': list(model.parameters())[:-1], 'lr': lr[0], 'momentum': 0.9},
         {'params': list(model.parameters())[-1], 'lr': lr[1], 'momentum': 0.9}
@@ -364,9 +366,7 @@ def bias_method2str(bias_method: Optional[str], biased_class: Optional[int], bia
     return bias_method_ + biased_class_ + "BiasProb" + bias_probability_
 
 
-# def _pascal_voc_multilabel(convert_mode=0):
-#     from models.pascal_voc_multilabel import PascalVocMultilabel
-#     return PascalVocMultilabel()
+
 
 
 def _squeezenet(output_size):
@@ -458,7 +458,7 @@ def _human_readable_voc_labels():
     Create human readable VOC PASCAL lables.
     idx2label[i] returns text label associated to class i.
     """
-    with open('./smbd/data/pascal_voc_class_index.json', 'rb') as f:
+    with open('../smbd/data/pascal_voc_class_index.json', 'rb') as f:
         class_idx = json.load(f)
     idx2label = [class_idx[str(k)] for k in range(len(class_idx))]
     return sorted(idx2label)
