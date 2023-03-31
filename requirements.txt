@@ -117,7 +117,6 @@ setuptools==54.1.2
 shortuuid==1.0.1
 simplegeneric==0.8.1
 simplejson==3.13.2
-six==1.15.0
 sklearn==0.0
 SMBD==VERSION
 smmap==3.0.5
